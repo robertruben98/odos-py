@@ -1,5 +1,10 @@
 # odos-py
 
+[![CI](https://github.com/robertruben98/odos-py/actions/workflows/ci.yml/badge.svg)](https://github.com/robertruben98/odos-py/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/odos-py.svg)](https://pypi.org/project/odos-py/)
+[![Python](https://img.shields.io/pypi/pyversions/odos-py.svg)](https://pypi.org/project/odos-py/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A modern, fully-typed Python client for the [Odos](https://docs.odos.xyz/build/api-docs) DEX Aggregator API.
 
 - Sync (`OdosClient`) and async (`AsyncOdosClient`) clients built on `httpx`
