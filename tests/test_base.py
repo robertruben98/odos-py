@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from odos_py._base import OdosConfig, backoff_delay, parse_retry_after
 
 
@@ -26,6 +28,19 @@ def test_parse_retry_after_numeric() -> None:
 def test_parse_retry_after_missing_or_invalid() -> None:
     assert parse_retry_after({}) is None
     assert parse_retry_after({"Retry-After": "Wed, 21 Oct 2015"}) is None
+
+
+def test_parse_retry_after_http_date() -> None:
+    # RFC 7231 HTTP-date form: compute seconds from "now" to that instant.
+    now = datetime(2015, 10, 21, 7, 28, 0, tzinfo=timezone.utc)
+    delay = parse_retry_after({"Retry-After": "Wed, 21 Oct 2015 07:28:30 GMT"}, now=now)
+    assert delay == 30.0
+
+
+def test_parse_retry_after_http_date_in_past_clamps_to_zero() -> None:
+    now = datetime(2015, 10, 21, 7, 30, 0, tzinfo=timezone.utc)
+    delay = parse_retry_after({"Retry-After": "Wed, 21 Oct 2015 07:28:30 GMT"}, now=now)
+    assert delay == 0.0
 
 
 def test_config_strips_trailing_slash_and_builds_url() -> None:

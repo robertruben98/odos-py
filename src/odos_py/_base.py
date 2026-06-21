@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Any, Mapping, Optional
 
 import httpx
@@ -47,15 +49,45 @@ class OdosConfig:
         return f"{self.base_url}/{path.lstrip('/')}"
 
 
-def parse_retry_after(headers: Mapping[str, str]) -> Optional[float]:
-    """Extract a numeric ``Retry-After`` (seconds) header if present."""
+def parse_retry_after(
+    headers: Mapping[str, str], *, now: Optional[datetime] = None
+) -> Optional[float]:
+    """Extract the ``Retry-After`` delay in seconds, if present.
+
+    Per RFC 7231 the header may be either a number of seconds (delta) or an
+    HTTP-date. Both forms are supported; an HTTP-date is converted to a delay
+    relative to ``now`` (defaulting to the current UTC time) and clamped to a
+    non-negative value. Returns ``None`` when the header is absent or
+    unparseable, so callers fall back to exponential backoff.
+    """
     value = headers.get("Retry-After") or headers.get("retry-after")
     if value is None:
         return None
+
+    text = str(value).strip()
+
+    # Form 1: a number of seconds.
     try:
-        return float(str(value))
+        return float(text)
+    except ValueError:
+        pass
+
+    # Form 2: an HTTP-date.
+    try:
+        target = parsedate_to_datetime(text)
     except (TypeError, ValueError):
         return None
+    if target is None:
+        return None
+    if target.tzinfo is None:
+        target = target.replace(tzinfo=timezone.utc)
+
+    current = now or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=timezone.utc)
+
+    delay = (target - current).total_seconds()
+    return max(0.0, delay)
 
 
 def backoff_delay(base: float, attempt: int, retry_after: Optional[float]) -> float:
