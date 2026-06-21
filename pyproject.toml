@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "odos-py"
-version = "0.1.0"
+version = "0.1.1"
 description = "A modern Python client for the Odos DEX Aggregator API"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.9"
-authors = [{ name = "robertdev" }]
+authors = [{ name = "Robert Ruben" }]
 keywords = ["odos", "dex", "aggregator", "defi", "ethereum", "swap"]
 classifiers = [
     "Development Status :: 4 - Beta",
