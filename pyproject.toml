@@ -38,9 +38,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/treew-inc/odos-py"
+Homepage = "https://github.com/robertruben98/odos-py"
 Documentation = "https://docs.odos.xyz/build/api-docs"
-Repository = "https://github.com/treew-inc/odos-py"
+Repository = "https://github.com/robertruben98/odos-py"
+Issues = "https://github.com/robertruben98/odos-py/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/odos_py"]
